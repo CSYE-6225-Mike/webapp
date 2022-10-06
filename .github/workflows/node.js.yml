@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-
+    name: node-check
     runs-on: ubuntu-latest
 
     strategy:
