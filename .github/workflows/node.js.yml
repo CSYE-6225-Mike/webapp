@@ -25,6 +25,6 @@ jobs:
       with:
         node-version: 18.8
     - run: npm ci
-      working-directory: /webapp/package-lock.json
+      working-directory: webapp/package-lock.json
     - run: npm test
-      working-directory: /webapp/package-lock.json
+      working-directory: webapp/package-lock.json
