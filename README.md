@@ -6,4 +6,8 @@ Demo Instructions:
 - Test the Rest API on postman with localhost:3000/v1/account to create user1[password], user2[password], user3[password]
 - Test the Rest API on postman with localhost:3000/v1/account/:id to get user info with authenticated account
 - Test the Rest API on postman with localhost:3000/v1/account/:id to update user info with authenticated account
-- 1
+
+Demo by launching an AMI in dev account.
+- Create another user role in AMI since we can't use administrator access for packer
+- packer validate ami.pkr.hcl
+- packer build ami.pkr.hcl
