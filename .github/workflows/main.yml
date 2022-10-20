@@ -29,3 +29,6 @@ jobs:
       - name: Run a one-line script
         run: echo Hello, world!
 
+      - name: Validate packer
+        run: packer validate ami.pkr.hcl
+

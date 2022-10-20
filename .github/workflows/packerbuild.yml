@@ -1,0 +1,52 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Build AMI CI
+
+on:
+
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  packer_init_validate_build:
+    needs: nodejs_tests
+    runs-on: ubuntu-latest
+    name: Build AWS Custom AMI with Node Application artifacts
+    steps: 
+      - name: Step 1 - Checkout code from branch
+        uses: actions/checkout@v2
+
+      - name: Step 2 - zip all the webService files
+        run: |
+          zip -r app.zip ./
+          pwd ./app
+      
+      - name: Step 3 - Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Step 4 - Packer Init
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: init
+          target: ami.pkr.hcl
+
+      - name: Step 5 - Validate Packer Template
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: validate
+          arguments: -syntax-only
+          target: ami.pkr.hcl
+
+      - name: Step 6 - Build Artifacts and create Custom AMI from Packer Build
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: build
+          arguments: "-color=false -on-error=abort"
+          target: ami.pkr.hcl
+        env:
+          PACKER_LOG: 1
