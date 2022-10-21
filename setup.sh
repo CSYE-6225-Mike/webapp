@@ -9,6 +9,8 @@ sudo apt-get upgrade -y
 sudo apt-get -y install curl
 curl -sL https://deb.nodesource.com/setup_18.x | sudo bash -
 sudo apt-get -y install nodejs
+echo "nodejs installed successfully"
+echo "$(npm --version) is the version of npm"
 
 # Install MySQL
 export DEBIAN_FRONTEND=noninteractive
@@ -19,14 +21,18 @@ sudo mysql -uroot -e <<EOSQL "drop user root@localhost;CREATE USER 'root'@'local
 EOSQL
 echo "Done setting mysql password."
 
-# # Update permission and file ownership on the copied application artifacts
-# sudo mkdir ~/app
-# cd ~/app
-# sudo git clone https://github.com/AndroidDevelopment-Mike/app.git
-# cd app
-# npm install
-# npm start
+# Update permission and file ownership on the copied application artifacts
+echo "Installing unzip"
+sudo yum makecache
+sudo yum install unzip -y
 
+# Unzip file
+unzip /home/ubuntu/webapp.zip -d /home/ubuntu/webapp
+sudo rm -rf /home/ubuntu/webapp.zip
+
+# Install the node server
+cd /home/ubuntu/webapp
+sudo npm install
 
 
 
