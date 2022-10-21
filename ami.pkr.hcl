@@ -15,7 +15,7 @@ variable "ssh_username" {
 
 variable "subnet_id" {
   type    = string
-  default = "subnet-067f3753df85542f5"
+  default = "subnet-09dc98224ff47ecf2"
 }
 
 variable "aws_ami_users" {
@@ -24,14 +24,14 @@ variable "aws_ami_users" {
 }
 
 variable "aws_access_key_id" {
-  type = string
-  default = "AKIATNR5LQU7AMDVZ5Z2"
+  type      = string
+  default   = "AKIATNR5LQU7B43IIFNK"
   sensitive = true
 }
 
 variable "aws_secret_Access_key" {
-  type = string
-  default = "dUSZtWVWpykEsGL4u5rLCo0btWeji0SWiaUbOoF6"
+  type      = string
+  default   = "rlpOKzNIQjDkwi7KXfdBtvmb9H0kuJfr7WPCS6VC"
   sensitive = true
 }
 
@@ -70,6 +70,11 @@ source "amazon-ebs" "my-ami" {
 build {
   sources = ["source.amazon-ebs.my-ami"]
 
+  provisioner "file" {
+    source      = "webapp.zip"
+    destination = "~/webapp.zip"
+  }
+
   provisioner "shell" {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
@@ -79,8 +84,4 @@ build {
     script = "setup.sh"
   }
 
-  // provisioner "file" {
-  //   source = "../app"
-  //   destination = "~/app"
-  // }
 }

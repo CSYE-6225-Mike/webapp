@@ -4,7 +4,6 @@
 name: Build AMI CI
 
 on:
-
   pull_request:
     branches: [ "main" ]
 
@@ -17,17 +16,17 @@ jobs:
       - name: Step 1 - Checkout code from branch
         uses: actions/checkout@v2
 
-      - name: Step 2 - zip all the webService files
+      - name: Step 2 - zip all the webapp files
         run: |
-          zip -r app.zip ./
-          pwd ./app
+          zip -r webapp.zip ./
+          pwd ./webapp
       
       - name: Step 3 - Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Step 4 - Packer Init
         uses: hashicorp/packer-github-actions@master
