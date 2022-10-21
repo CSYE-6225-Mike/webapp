@@ -6,8 +6,9 @@ sudo apt-get update
 sudo apt-get upgrade -y
 
 # Install node.js
+sudo apt-get install -y gcc-c++ make
 sudo apt-get -y install curl
-curl -sL https://deb.nodesource.com/setup_18.x | sudo bash -
+curl -sL https://rpm.nodesource.com/setup_14.x | bash -
 sudo apt-get -y install nodejs
 echo "nodejs installed successfully"
 echo "$(npm --version) is the version of npm"
@@ -32,7 +33,4 @@ sudo rm -rf /home/ubuntu/webapp.zip
 
 # Install the node server
 cd /home/ubuntu/webapp
-sudo npm install
-
-
-
+sudo npm install -g
