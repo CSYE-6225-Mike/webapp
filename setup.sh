@@ -5,6 +5,7 @@ sleep 30
 sudo apt-get update
 sudo apt-get upgrade -y
 
+
 # Install node.js
 sudo apt-get -y install curl
 curl -sL https://deb.nodesource.com/setup_18.x | sudo bash -
@@ -23,8 +24,8 @@ echo "Done setting mysql password."
 
 # Update permission and file ownership on the copied application artifacts
 echo "Installing unzip"
-sudo yum makecache
-sudo yum install unzip -y
+sudo apt install makecache
+sudo apt install unzip -y
 
 # Unzip file
 unzip /home/ubuntu/webapp.zip -d /home/ubuntu/webapp
