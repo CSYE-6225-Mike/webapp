@@ -1,6 +1,7 @@
 #!/bin/sh
 sleep 30
 
+
 # Update OS
 sudo apt-get update
 sudo apt-get upgrade -y
