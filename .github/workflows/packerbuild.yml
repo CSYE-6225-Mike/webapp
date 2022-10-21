@@ -13,7 +13,30 @@ on:
     branches: [ "main" ]
 
 jobs:
+  nodejs_tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+    name: Install node application and run unit tests
+    steps:
+      - name: Step 1 - Checkout code from branch
+        uses: actions/checkout@v2
+      
+      - name: Step 2 - Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Step 3 - Run Npm build install and unit tests
+        run: |
+          npm ci
+          npm run build --if-present
+          npm test
+          
   packer_init_validate_build:
+    needs: nodejs_tests
     runs-on: ubuntu-latest
     name: Build AWS Custom AMI with Node Application artifacts
     steps: 
