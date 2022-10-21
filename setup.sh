@@ -8,11 +8,10 @@ sudo apt-get upgrade -y
 # Install node.js
 sudo apt-get install -y gcc-c++ make
 sudo apt-get -y install curl
-curl -sL https://rpm.nodesource.com/setup_16.x | bash -
+curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
 sudo apt-get -y install nodejs
 whereis node
-which npm
-sudo ln -s /usr/local/bin/npm /usr/bin/npm
+whereis npm
 echo "nodejs installed successfully"
 echo "$(npm --version) is the version of npm"
 
