@@ -6,8 +6,9 @@ sudo apt-get update
 sudo apt-get upgrade -y
 
 # Install node.js
+sudo apt-get install -y gcc-c++ make
 sudo apt-get -y install curl
-curl -sL https://rpm.nodesource.com/setup_16.x | bash -
+curl -sL https://rpm.nodesource.com/setup_14.x | bash -
 sudo apt-get -y install nodejs
 echo "nodejs installed successfully"
 echo "$(npm --version) is the version of npm"
@@ -23,8 +24,8 @@ echo "Done setting mysql password."
 
 # Update permission and file ownership on the copied application artifacts
 echo "Installing unzip"
-sudo yum makecache
-sudo yum install unzip -y
+sudo apt-get makecache
+sudo apt-get install unzip -y
 
 # Unzip file
 unzip /home/ubuntu/webapp.zip -d /home/ubuntu/webapp
