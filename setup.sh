@@ -38,3 +38,4 @@ sudo rm -rf /home/ubuntu/webapp.zip
 # Install the node server
 cd /home/ubuntu/webapp
 sudo nvm install -g
+
