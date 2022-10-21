@@ -10,10 +10,12 @@ sudo apt-get install -y gcc-c++ make
 sudo apt-get -y install curl
 curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
 sudo apt-get -y install nodejs
-whereis node
-whereis npm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+. ~/.nvm/nvm.sh
+nvm install node
+node -e "console.log('Running Node.js ' + process.version)"
 echo "nodejs installed successfully"
-echo "$(npm --version) is the version of npm"
+echo "$(nvm --version) is the version of nvm"
 
 # Install MySQL
 export DEBIAN_FRONTEND=noninteractive
@@ -35,7 +37,7 @@ sudo rm -rf /home/ubuntu/webapp.zip
 
 # Install the node server
 cd /home/ubuntu/webapp
-sudo npm install -g
+sudo nvm install -g
 
 
 
