@@ -11,6 +11,7 @@ sudo apt-get install -y gcc-c++ make
 sudo apt-get -y install curl
 curl -sL https://rpm.nodesource.com/setup_14.x | bash -
 sudo apt-get -y install nodejs
+sudo ln -s /usr/local/bin/npm /usr/bin/npm
 echo "nodejs installed successfully"
 echo "$(npm --version) is the version of npm"
 
