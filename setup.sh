@@ -32,7 +32,7 @@ sudo rm -rf /home/ubuntu/webapp.zip
 
 # Install the node server
 cd /home/ubuntu/webapp
-sudo npm install
+sudo npm install -g
 
 
 
