@@ -3,13 +3,16 @@
 
 name: Build AMI CI
 
+
+env:
+  ARTIFACT_NAME: webapp
+
 on:
   pull_request:
     branches: [ "main" ]
 
 jobs:
   packer_init_validate_build:
-    needs: nodejs_tests
     runs-on: ubuntu-latest
     name: Build AWS Custom AMI with Node Application artifacts
     steps: 
@@ -28,20 +31,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Step 4 - Packer Init
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: init
-          target: ami.pkr.hcl
-
-      - name: Step 5 - Validate Packer Template
+      - name: Step 4 - Validate Packer Template
         uses: hashicorp/packer-github-actions@master
         with:
           command: validate
           arguments: -syntax-only
           target: ami.pkr.hcl
 
-      - name: Step 6 - Build Artifacts and create Custom AMI from Packer Build
+      - name: Step 5 - Build Artifacts and create Custom AMI from Packer Build
         uses: hashicorp/packer-github-actions@master
         with:
           command: build
