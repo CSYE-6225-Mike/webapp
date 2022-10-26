@@ -13,6 +13,6 @@ db.sync({ force: false }).then()
 
 app.use(userRoutes)
 
-app.listen(8080, () => {
-    console.log("Web application is running at port: 8080!")
+app.listen(3000, () => {
+    console.log("Web application is running at port: 3000!")
 })
