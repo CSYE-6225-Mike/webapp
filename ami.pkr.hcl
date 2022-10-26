@@ -11,11 +11,23 @@ variable "source_ami" {
 variable "ssh_username" {
   type    = string
   default = "ubuntu"
-}
+
 
 variable "subnet_id" {
   type    = string
-  default = "subnet-09dc98224ff47ecf2"
+  default = "subnet-032260fb1f50c1f5b"
+}
+
+variable "access_key" {
+  type      = string
+  default   = "AKIATNR5LQU7MRE4U2VC"
+  sensitive = true
+}
+
+variable "secret_key" {
+  type      = string
+  default   = "eV3BJSHLjNkHtrgTiqB7x2qsR5QAZPToSGlBR1Do"
+  sensitive = true
 }
 
 
@@ -25,14 +37,16 @@ source "amazon-ebs" "my-ami" {
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
 
-  ami_users = ["428744527365"]
+  ami_users  = ["428744527365"]
+  access_key = "${var.access_key}"
+  secret_key = "${var.secret_key}"
 
   ami_regions = [
     "us-east-1",
   ]
 
   aws_polling {
-    delay_seconds = 120
+    delay_seconds = 30
     max_attempts  = 50
   }
 
@@ -65,5 +79,4 @@ build {
 
     script = "setup.sh"
   }
-
 }
