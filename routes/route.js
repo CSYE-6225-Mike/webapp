@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-var basicAuth = require('basic-Auth')
 const models = require('../models/user')
 var validator = require('email-validator')
 const { where } = require('sequelize')
@@ -10,9 +9,6 @@ const user = require('../models/user')
 const { userInfo } = require('os')
 const basicAuthentication = require('../middleware/basicAuthentication')
 
-const authenticate = async(req, res, next) => {
-
-}
 
 router.get('/', (req, res) => {
     res.json({ message: "Welcome to the web application!" })
