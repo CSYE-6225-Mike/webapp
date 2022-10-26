@@ -15,4 +15,4 @@ Demo by launching an AMI in dev account.
 
 Assignment 5 Demo:
 - Already delete the MySQL server in the setup.sh. If we build the AMI, the MySQL server will not be installed.
-- Build AMI -> copy ami id -> edit cloudformation ami_id -> run cloudformation -> test API on Postman 
+- Build AMI -> copy ami id -> edit cloudformation ami_id -> run cloudformation on demo account -> test API on Postman 

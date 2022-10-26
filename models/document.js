@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../config/db.sequelize')
 
+
 const document = sequelize.define('Document', {
     doc_id: {
         type: Sequelize.UUID,
@@ -18,5 +19,6 @@ const document = sequelize.define('Document', {
         type: Sequelize.STRING
     }
 })
+
 
 module.exports = document

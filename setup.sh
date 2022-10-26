@@ -21,7 +21,7 @@ sudo apt-get install unzip
 sleep 5
 unzip /home/ubuntu/webapp.zip -d /home/ubuntu/webapp
 sudo rm -rf /home/ubuntu/webapp.zip
-# Install the node server
+# Move file and install dependencies 
 sleep 5
 cd /home/ubuntu/webapp
 sudo npm install

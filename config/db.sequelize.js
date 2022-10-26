@@ -1,16 +1,18 @@
-const config = require('../config/db.config')
+require("dotenv").config()
+const mysql = require('mysql')
 const Sequelize = require('sequelize');
 const { Model } = require('sequelize');
-const sequelize = new Sequelize(config.db.database, config.db.user, config.db.password, {
-    host: config.db.host,
-    dialect: config.db.dialect,
-    operatorsAliases: false,
-    port: config.db.port,
+
+const sequelize = new Sequelize(process.env.RDS_DB_NAME, process.env.RDS_USERNAME, process.env.RDS_PASSWORD, {
+    host: process.env.RDS_HOST,
+    dialect: "mysql",
+    port: process.env.RDS_PORT,
+    operatorsAliases: '0',
     pool: {
-        max: config.db.pool.max,
-        min: config.db.pool.min,
-        acquire: config.db.pool.acquire,
-        idle: config.db.pool.idle
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
     }
 })
 

@@ -18,7 +18,6 @@ router.get('/healthz', (req, res) => {
     res.status(200).send()
 })
 
-
 router.post('/v1/account', async(req, res, next) => {
     try {
         const data = await models.findOne({ where: { username: req.body.username } })
@@ -46,7 +45,6 @@ router.post('/v1/account', async(req, res, next) => {
         })
         delete user.dataValues.password
         res.status(201).send(user)
-
     } catch (err) {
         console.log(err)
     }
@@ -59,11 +57,7 @@ router.get('/v1/account/:id', basicAuthentication, async(req, res) => {
         return res.status(401).send({ message: 'Unauthorized' })
     }
 
-    const id = Number.parseInt(req.params.id)
-
-    if (Number.isNaN(id)) {
-        res.status(403).send({ message: 'Forbidden' })
-    }
+    const id = req.params.id
 
     const user = await models.findOne({ where: { id: id } })
     if (!user) {
@@ -93,10 +87,7 @@ router.put('/v1/account/:id', basicAuthentication, async(req, res) => {
         res.status(204).send({ message: 'No Content' })
     }
 
-    const id = Number.parseInt(req.params.id)
-    if (Number.isNaN(id)) {
-        res.status(403).send({ message: 'Forbidden' })
-    }
+    const id = req.params.id
 
     if (authenticatedUser.id != id) {
         res.status(403).send({ message: 'Forbidden' })

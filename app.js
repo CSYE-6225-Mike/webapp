@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: true }))
 db.sync({ force: false }).then()
 
 app.use(userRoutes)
+
 app.use(fileRoutes)
 
 app.listen(3000, () => {
