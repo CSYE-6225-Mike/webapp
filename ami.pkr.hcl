@@ -18,26 +18,12 @@ variable "subnet_id" {
   default = "subnet-032260fb1f50c1f5b"
 }
 
-variable "access_key" {
-  type      = string
-  default   = "AKIATNR5LQU7MRSQNIVD"
-  sensitive = true
-}
-
-variable "secret_key" {
-  type      = string
-  default   = "ZKV+XkJq6WAftHXaf+xweBUM6F5VNgShT2y8ANUG"
-  sensitive = true
-}
-
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
 
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
   ami_users  = ["428744527365"]
   ami_regions = [
     "us-east-1",
