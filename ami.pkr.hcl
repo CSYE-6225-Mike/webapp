@@ -18,6 +18,8 @@ variable "subnet_id" {
   default = "subnet-032260fb1f50c1f5b"
 }
 
+
+
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
