@@ -9,8 +9,9 @@ env:
   AWS_REGION: us-east-1
 
 on:
-  pull_request:
+  push:
     branches: [ "main" ]
+## Discard previous changes
 
 jobs:
   nodejs_tests:
