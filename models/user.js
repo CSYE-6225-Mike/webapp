@@ -3,8 +3,8 @@ const sequelize = require('../config/db.sequelize')
 
 const user = sequelize.define('User', {
     id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         primaryKey: true
     },
     firstname: {
@@ -22,17 +22,6 @@ const user = sequelize.define('User', {
         type: Sequelize.STRING,
         unique: true
     }
-}, {
-    instanceMethods: {
-        toJSON: function() {
-            const userObj = Object.assign({}, this.dataValues)
-            delete userObj.password
-            return userObj
-        }
-    }
-
 })
-
-
 
 module.exports = user

@@ -15,24 +15,43 @@ variable "ssh_username" {
 
 variable "subnet_id" {
   type    = string
-  default = "subnet-09dc98224ff47ecf2"
+  default = "subnet-032260fb1f50c1f5b"
+}
+
+<<<<<<< HEAD
+=======
+variable "access_key" {
+  type      = string
+  default   = "AKIATNR5LQU7CPOMUVOJ"
+  sensitive = true
+}
+
+variable "secret_key" {
+  type      = string
+  default   = "EPxyF5G7T1ggXo80iMTroV6JaCRStu/o3OmLrvJ0"
+  sensitive = true
 }
 
 
+>>>>>>> 6a1dd40 (build ami)
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
 
-  ami_users = ["428744527365"]
-
+  ami_users  = ["428744527365"]
+<<<<<<< HEAD
+=======
+  access_key = "${var.access_key}"
+  secret_key = "${var.secret_key}"
+>>>>>>> 6a1dd40 (build ami)
   ami_regions = [
     "us-east-1",
   ]
 
   aws_polling {
-    delay_seconds = 120
+    delay_seconds = 30
     max_attempts  = 50
   }
 
@@ -65,5 +84,4 @@ build {
 
     script = "setup.sh"
   }
-
 }
