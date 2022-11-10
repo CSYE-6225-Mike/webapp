@@ -8,18 +8,24 @@ const sequelize = require('../config/db.sequelize')
 const user = require('../models/user')
 const { userInfo } = require('os')
 const basicAuthentication = require('../middleware/basicAuthentication')
-
+const logger = require('../config/winston')
+const SDC = require('statsd-client')
+const sdc = new SDC({ host: 'localhost', port: 8125 })
 
 router.get('/', (req, res) => {
     res.json({ message: "Welcome to the web application!" })
 })
 
 router.get('/healthz', (req, res) => {
+    sdc.increment('Test healthz')
+    logger.info("GET /healthz -200 ok")
     res.status(200).send()
 })
 
 router.post('/v1/account', async(req, res, next) => {
     try {
+        sdc.increment('Test post.v1.account')
+        logger.info('POST /v1/account')
         const data = await models.findOne({ where: { username: req.body.username } })
 
         if (data) {
@@ -52,6 +58,8 @@ router.post('/v1/account', async(req, res, next) => {
 
 
 router.get('/v1/account/:id', basicAuthentication, async(req, res) => {
+    sdc.increment('Test get.v1.account.id')
+    logger.info('GET /v1/account/:id')
     const authenticatedUser = req.authenticatedUser
     if (!authenticatedUser) {
         return res.status(401).send({ message: 'Unauthorized' })
@@ -78,6 +86,8 @@ router.get('/v1/account/:id', basicAuthentication, async(req, res) => {
 
 
 router.put('/v1/account/:id', basicAuthentication, async(req, res) => {
+    sdc.increment('Test put.v1.account.id')
+    logger.info('PUT /v1/account/:id')
     const authenticatedUser = req.authenticatedUser
     if (!authenticatedUser) {
         return res.status(401).send({ message: 'Unauthorized' })
