@@ -8,6 +8,9 @@ const multer = require('multer')
 const multerS3 = require('multer-s3')
 const upload = multer({ dest: 'uploads/' })
 const fs = require('fs')
+const logger = require('../config/winston')
+const SDC = require('statsd-client')
+const sdc = new SDC({ host: 'localhost', port: 8125 })
 
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION
@@ -34,6 +37,8 @@ const deleteFile = async(fileName) => {
 
 router.post('/v1/documents', basicAuthentication, upload.single('file'), async(req, res) => {
     try {
+        sdc.increment('Test post.v1.documents')
+        logger.info('POST /v1/documents')
         const authenticatedUser = req.authenticatedUser
         if (!authenticatedUser) {
             return res.status(401).send({ message: 'Unauthorized' })
@@ -61,6 +66,8 @@ router.post('/v1/documents', basicAuthentication, upload.single('file'), async(r
 })
 
 router.get('/v1/documents', basicAuthentication, async(req, res) => {
+    sdc.increment('Test get.v1.documents')
+    logger.info('GET /v1/documents')
     const authenticatedUser = req.authenticatedUser
     if (!authenticatedUser) {
         return res.status(401).send({ message: 'Unauthorized' })
@@ -72,6 +79,8 @@ router.get('/v1/documents', basicAuthentication, async(req, res) => {
 
 router.get('/v1/documents/:id', basicAuthentication, async(req, res) => {
     try {
+        sdc.increment('TEST get.v1.documents.id')
+        logger.info('GET /v1/documents/:id')
         const authenticatedUser = req.authenticatedUser
         if (!authenticatedUser) {
             return res.status(401).send({ message: 'Unauthorized' })
@@ -95,6 +104,8 @@ router.get('/v1/documents/:id', basicAuthentication, async(req, res) => {
 
 router.delete('/v1/documents/:id', basicAuthentication, async(req, res) => {
     try {
+        sdc.increment('Test delete.v1.documents.id')
+        logger.info('DELETE /v1/documents/:id')
         const authenticatedUser = req.authenticatedUser
         if (!authenticatedUser) {
             return res.status(401).send({ message: 'Unauthorized' })

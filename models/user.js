@@ -21,6 +21,10 @@ const user = sequelize.define('User', {
     username: {
         type: Sequelize.STRING,
         unique: true
+    },
+    isVerified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
     }
 })
 
