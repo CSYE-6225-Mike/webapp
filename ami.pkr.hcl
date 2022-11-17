@@ -13,6 +13,7 @@ variable "ssh_username" {
   default = "ubuntu"
 }
 
+
 variable "subnet_id" {
   type    = string
   default = "subnet-032260fb1f50c1f5b"
