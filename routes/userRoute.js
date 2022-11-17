@@ -18,42 +18,51 @@ router.get('/', (req, res) => {
 
 router.get('/healthz', (req, res) => {
     sdc.increment('Test healthz')
-    logger.info("GET /healthz -200 ok")
+
+    logger.info("GET /healthz")
     res.status(200).send()
 })
 
 router.post('/v1/account', async(req, res, next) => {
-    try {
-        sdc.increment('Test post.v1.account')
-        logger.info('POST /v1/account')
-        const data = await models.findOne({ where: { username: req.body.username } })
+    sdc.increment('Test post.v1.account')
+    logger.info('POST /v1/account')
+    const data = await models.findOne({ where: { username: req.body.username } })
 
-        if (data) {
-            return res.status(400).send({
-                message: 'Please Use a different username!'
-            })
-        }
-
-        if (!validator.validate(req.body.username)) {
-            return res.status(400).send({
-                message: "Please use a email!"
-            })
-        }
-
-        // models.create(User).then(user => res.status(201).send(user.toJSON()))
-
-        const salt = await bcrypt.genSalt(10)
-        const user = await models.create({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            password: await bcrypt.hash(req.body.password, salt),
-            username: req.body.username
+    if (data) {
+        return res.status(400).send({
+            message: 'Please Use a different username!'
         })
-        delete user.dataValues.password
-        res.status(201).send(user)
-    } catch (err) {
-        console.log(err)
     }
+
+    if (!validator.validate(req.body.username)) {
+        return res.status(400).send({
+            message: "Please use a email!"
+        })
+    }
+
+    // models.create(User).then(user => res.status(201).send(user.toJSON()))
+
+    const salt = await bcrypt.genSalt(10)
+    const user = await models.create({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        password: await bcrypt.hash(req.body.password, salt),
+        username: req.body.username
+    })
+}
+
+    // models.create(User).then(user => res.status(201).send(user.toJSON()))
+
+    const salt = await bcrypt.genSalt(10)
+    const user = await models.create({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        password: await bcrypt.hash(req.body.password, salt),
+        username: req.body.username
+    })
+    delete user.dataValues.password
+    res.status(201).send(user)
+
 })
 
 
