@@ -8,50 +8,67 @@ const sequelize = require('../config/db.sequelize')
 const user = require('../models/user')
 const { userInfo } = require('os')
 const basicAuthentication = require('../middleware/basicAuthentication')
-
+const logger = require('../config/winston')
+const SDC = require('statsd-client')
+const sdc = new SDC({ host: 'localhost', port: 8125 })
 
 router.get('/', (req, res) => {
     res.json({ message: "Welcome to the web application!" })
 })
 
 router.get('/healthz', (req, res) => {
+    sdc.increment('Test healthz')
+
+    logger.info("GET /healthz")
     res.status(200).send()
 })
 
 router.post('/v1/account', async(req, res, next) => {
-    try {
-        const data = await models.findOne({ where: { username: req.body.username } })
+    sdc.increment('Test post.v1.account')
+    logger.info('POST /v1/account')
+    const data = await models.findOne({ where: { username: req.body.username } })
 
-        if (data) {
-            return res.status(400).send({
-                message: 'Please Use a different username!'
-            })
-        }
-
-        if (!validator.validate(req.body.username)) {
-            return res.status(400).send({
-                message: "Please use a email!"
-            })
-        }
-
-        // models.create(User).then(user => res.status(201).send(user.toJSON()))
-
-        const salt = await bcrypt.genSalt(10)
-        const user = await models.create({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            password: await bcrypt.hash(req.body.password, salt),
-            username: req.body.username
+    if (data) {
+        return res.status(400).send({
+            message: 'Please Use a different username!'
         })
-        delete user.dataValues.password
-        res.status(201).send(user)
-    } catch (err) {
-        console.log(err)
     }
+
+    if (!validator.validate(req.body.username)) {
+        return res.status(400).send({
+            message: "Please use a email!"
+        })
+    }
+
+    // models.create(User).then(user => res.status(201).send(user.toJSON()))
+
+    const salt = await bcrypt.genSalt(10)
+    const user = await models.create({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        password: await bcrypt.hash(req.body.password, salt),
+        username: req.body.username
+    })
+}
+
+    // models.create(User).then(user => res.status(201).send(user.toJSON()))
+
+    const salt = await bcrypt.genSalt(10)
+    const user = await models.create({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        password: await bcrypt.hash(req.body.password, salt),
+        username: req.body.username
+    })
+    delete user.dataValues.password
+    res.status(201).send(user)
+
 })
 
 
 router.get('/v1/account/:id', basicAuthentication, async(req, res) => {
+    sdc.increment('Test get.v1.account.id')
+    logger.info('GET /v1/account/:id')
     const authenticatedUser = req.authenticatedUser
     if (!authenticatedUser) {
         return res.status(401).send({ message: 'Unauthorized' })
@@ -78,6 +95,8 @@ router.get('/v1/account/:id', basicAuthentication, async(req, res) => {
 
 
 router.put('/v1/account/:id', basicAuthentication, async(req, res) => {
+    sdc.increment('Test put.v1.account.id')
+    logger.info('PUT /v1/account/:id')
     const authenticatedUser = req.authenticatedUser
     if (!authenticatedUser) {
         return res.status(401).send({ message: 'Unauthorized' })
