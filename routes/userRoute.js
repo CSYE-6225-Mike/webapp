@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
 
 router.get('/healthz', (req, res) => {
     sdc.increment('Test healthz')
+
     logger.info("GET /healthz")
     res.status(200).send()
 })
@@ -38,6 +39,17 @@ router.post('/v1/account', async(req, res, next) => {
             message: "Please use a email!"
         })
     }
+
+    // models.create(User).then(user => res.status(201).send(user.toJSON()))
+
+    const salt = await bcrypt.genSalt(10)
+    const user = await models.create({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        password: await bcrypt.hash(req.body.password, salt),
+        username: req.body.username
+    })
+}
 
     // models.create(User).then(user => res.status(201).send(user.toJSON()))
 
