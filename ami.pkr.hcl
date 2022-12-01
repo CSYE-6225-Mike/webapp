@@ -27,8 +27,6 @@ source "amazon-ebs" "my-ami" {
   ami_description = "AMI for CSYE 6225"
 
   ami_users  = ["428744527365"]
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
   ami_regions = [
     "us-east-1",
   ]
