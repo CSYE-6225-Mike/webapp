@@ -44,6 +44,10 @@ router.post('/v1/documents', basicAuthentication, upload.single('file'), async(r
             return res.status(401).send({ message: 'Unauthorized' })
         }
 
+        if (authenticatedUser.isVerified == false) {
+            res.status(400).send({ message: 'Unverified user' })
+        }
+
         if (req.body == null) {
             res.status(400).send({ message: 'Bad request!' })
         }
@@ -72,6 +76,11 @@ router.get('/v1/documents', basicAuthentication, async(req, res) => {
     if (!authenticatedUser) {
         return res.status(401).send({ message: 'Unauthorized' })
     }
+
+    if (authenticatedUser.isVerified == false) {
+        res.status(400).send({ message: 'Unverified user' })
+    }
+
     const id = authenticatedUser.id
     const posts = await models.findAll({ where: { user_id: id } })
     res.status(200).send({ posts })
@@ -84,6 +93,10 @@ router.get('/v1/documents/:id', basicAuthentication, async(req, res) => {
         const authenticatedUser = req.authenticatedUser
         if (!authenticatedUser) {
             return res.status(401).send({ message: 'Unauthorized' })
+        }
+
+        if (authenticatedUser.isVerified == false) {
+            res.status(400).send({ message: 'Unverified user' })
         }
 
         const doc_id = req.params.id
@@ -109,6 +122,10 @@ router.delete('/v1/documents/:id', basicAuthentication, async(req, res) => {
         const authenticatedUser = req.authenticatedUser
         if (!authenticatedUser) {
             return res.status(401).send({ message: 'Unauthorized' })
+        }
+
+        if (authenticatedUser.isVerified == false) {
+            res.status(400).send({ message: 'Unverified user' })
         }
 
         const doc_id = req.params.id

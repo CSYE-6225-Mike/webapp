@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
@@ -11,6 +12,55 @@ const basicAuthentication = require('../middleware/basicAuthentication')
 const logger = require('../config/winston')
 const SDC = require('statsd-client')
 const sdc = new SDC({ host: 'localhost', port: 8125 })
+const uuid = require('uuid')
+const AWS = require('aws-sdk')
+
+var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+const addUserToken = async(username) => {
+    const userToken = uuid.v4()
+    const time = new Date().getTime() / 1000 + 300
+
+    const params = {
+        TableName: process.env.DynamoDB_TableOne,
+        Item: {
+            username: {
+                S: username
+            },
+            userToken: {
+                S: userToken
+            },
+            ttl: {
+                N: time.toString()
+            }
+        }
+    }
+
+    await ddb.putItem(params).promise()
+    return userToken
+}
+
+const verifyUserToken = async(username, userToken) => {
+    const params = {
+        TableName: process.env.DynamoDB_TableOne,
+        Key: {
+            username: {
+                S: username
+            }
+        }
+    }
+
+    const data = await ddb.getItem(params).promise()
+    if (data.Item && data.Item.userToken && data.Item.ttl) {
+        const existUserToken = data.Item.userToken.S
+        const tokenTTL = data.Item.ttl.N
+        const curTime = new Date().getTime() / 1000
+        if (existUserToken == userToken && curTime < tokenTTL) {
+            return true
+        }
+    }
+
+    return false
+}
 
 router.get('/', (req, res) => {
     res.json({ message: "Welcome to the web application!" })
@@ -18,7 +68,6 @@ router.get('/', (req, res) => {
 
 router.get('/healthz', (req, res) => {
     sdc.increment('Test healthz')
-
     logger.info("GET /healthz")
     res.status(200).send()
 })
@@ -40,36 +89,86 @@ router.post('/v1/account', async(req, res, next) => {
         })
     }
 
-    // models.create(User).then(user => res.status(201).send(user.toJSON()))
-
     const salt = await bcrypt.genSalt(10)
-    const user = await models.create({
+    const user = await models.build({
+        id: uuid.v4(),
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         password: await bcrypt.hash(req.body.password, salt),
-        username: req.body.username
+        username: req.body.username,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isVerified: false
     })
-}
 
-    // models.create(User).then(user => res.status(201).send(user.toJSON()))
+    const randomToken = await addUserToken(user.username)
 
-    const salt = await bcrypt.genSalt(10)
-    const user = await models.create({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        password: await bcrypt.hash(req.body.password, salt),
-        username: req.body.username
+    const message = {
+        username: user.username,
+        userToken: randomToken,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        message_type: "verify_user"
+    }
+
+    const sns = new AWS.SNS({
+        region: process.env.AWS_REGION
     })
-    delete user.dataValues.password
-    res.status(201).send(user)
 
+    const params = {
+        Message: JSON.stringify(message),
+        TopicArn: process.env.SNS_TOPIC
+    }
+
+    // Create promise and SNS service object
+    var publishTextPromise = await sns.publish(params).promise();
+
+    // Handle promise's fulfilled/rejected states
+    console.log(publishTextPromise)
+
+    const newUser = await user.save()
+    delete newUser.dataValues.password
+    res.status(201).send(newUser)
 })
 
+router.get('/v1/verifyUserEmail', async(req, res) => {
+    sdc.increment('Verify user email')
+    logger.info('GET /v1/verifyUserEmail')
+    const email = req.query.email
+    const token = req.query.userToken
+
+    const isValid = await verifyUserToken(email, token)
+    if (isValid) {
+        logger.info('Email and userToken is valid')
+        const user = await models.findOne({
+            where: { username: email }
+        })
+
+        user.isVerified = true
+        user.updatedAt = new Date()
+
+        try {
+            await user.save()
+        } catch (err) {
+            logger.error(err)
+            return res.status(500).send({ message: 'Server error' })
+        }
+
+        res.status(200).send({ message: 'Email verified successfully' })
+    } else {
+        res.status(400).send({
+            message: 'Email or token is not verified due to some errors'
+        })
+    }
+})
 
 router.get('/v1/account/:id', basicAuthentication, async(req, res) => {
     sdc.increment('Test get.v1.account.id')
     logger.info('GET /v1/account/:id')
     const authenticatedUser = req.authenticatedUser
+    if (authenticatedUser.isVerified == false) {
+        res.status(400).send({ message: 'Unverified user' })
+    }
     if (!authenticatedUser) {
         return res.status(401).send({ message: 'Unauthorized' })
     }
@@ -84,8 +183,8 @@ router.get('/v1/account/:id', basicAuthentication, async(req, res) => {
     // res.status(200).send({user})
     res.status(200).send({
         id: user.dataValues.id,
-        first_name: user.dataValues.firstname,
-        last_name: user.dataValues.lastname,
+        firstname: user.dataValues.firstname,
+        lastname: user.dataValues.lastname,
         username: user.dataValues.username,
         account_created: user.dataValues.createdAt,
         account_updated: user.dataValues.updatedAt,
@@ -100,6 +199,10 @@ router.put('/v1/account/:id', basicAuthentication, async(req, res) => {
     const authenticatedUser = req.authenticatedUser
     if (!authenticatedUser) {
         return res.status(401).send({ message: 'Unauthorized' })
+    }
+
+    if (authenticatedUser.isVerified == false) {
+        res.status(400).send({ message: 'Unverified user' })
     }
 
     if (!Object.keys(req.body).length) {
