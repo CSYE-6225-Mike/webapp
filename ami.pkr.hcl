@@ -13,16 +13,6 @@ variable "ssh_username" {
   default = "ubuntu"
 }
 
-variable "subnet_id" {
-  type    = string
-  default = "subnet-032260fb1f50c1f5b"
-}
-
-variable "access_key" {
-  type      = string
-  default   = "AKIATNR5LQU7CPOMUVOJ"
-  sensitive = true
-}
 
 variable "secret_key" {
   type      = string
