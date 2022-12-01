@@ -1,6 +1,5 @@
 name: Build AMI And Implement Immutable Server
 
-
 env:
   ARTIFACT_NAME: webapp
   AWS_REGION: us-east-1
@@ -16,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
     name: Install node application and run unit tests
     steps:
       - name: Step 1 - Checkout code from branch
