@@ -22,6 +22,12 @@ const user = sequelize.define('User', {
         type: Sequelize.STRING,
         unique: true
     },
+    createdAt: {
+        type: Sequelize.DATE,
+    },
+    updatedAt: {
+        type: Sequelize.DATE,
+    },
     isVerified: {
         type: Sequelize.BOOLEAN,
         defaultValue: false

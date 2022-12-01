@@ -19,3 +19,5 @@ Assignment 5 Demo:
 
 Assignment 7 Demo:
 - Demonstrate the setup.sh script and build the AMI -> paste the AMI id to cloudformation -> create the cloudformation in demo account -> check the cloudwatch dashboard 
+
+Assignment 9 Import a Certificate: aws acm import-certificate --certificate fileb://prod_mikea1_me.crt --certificate-chain fileb://prod_mikea1_me.ca-bundle --private-key fileb://private.key

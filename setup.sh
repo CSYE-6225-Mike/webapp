@@ -18,7 +18,11 @@ sudo apt-get install unzip
 sleep 15
 unzip /home/ubuntu/webapp.zip -d /home/ubuntu/webapp
 sudo rm -rf /home/ubuntu/webapp.zip
-# Move file and install dependencies 
+#Install global-bundle.pem for RDS
+sleep 5
+cd /home/ubuntu
+wget https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+#Move file and install dependencies 
 sleep 15
 cd /home/ubuntu/webapp
 sudo npm install

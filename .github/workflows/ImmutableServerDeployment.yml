@@ -1,12 +1,13 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Build AMI CI
+name: Build AMI And Implement Immutable Server
 
 
 env:
   ARTIFACT_NAME: webapp
   AWS_REGION: us-east-1
+  LaunchTemplateName: asg_launch_config
 
 on:
   push:
@@ -51,8 +52,8 @@ jobs:
       - name: Step 3 - Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_DEV_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_DEV_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Step 4 - Validate Packer Template
@@ -70,3 +71,32 @@ jobs:
           target: ami.pkr.hcl
         env:
           PACKER_LOG: 1
+
+      - name: Step 6 - Get Latest AMI ID
+        run: |
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)
+          echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
+
+      - name: Step 6 - Configure AWS Demo Account Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_DEMO_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_DEMO_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Step 7 - Create a new Launch Template with the AWS CLI
+        run: |
+          aws ec2 create-launch-template-version \
+          --launch-template-name ${{ env.LaunchTemplateName }} \
+          --version-description WebVersion2 \
+          --source-version 1 \
+          --launch-template-data "ImageId=${{ env.AMI_ID }}"
+
+      - name: Step 8 - Update the Autoscaling Group to use the new Launch Template
+        run: |
+          aws autoscaling update-auto-scaling-group --auto-scaling-group-name ${{ secrets.AutoScaling_Group_Name }} \
+          --launch-template LaunchTemplateName=${{ env.LaunchTemplateName }},Version='$Latest'
+
+      - name: Step 9 - Update the Autoscaling Group to use the new Launch Template
+        run: |
+          aws autoscaling start-instance-refresh --auto-scaling-group-name ${{ secrets.AutoScaling_Group_Name }}
