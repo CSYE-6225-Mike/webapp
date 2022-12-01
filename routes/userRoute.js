@@ -62,7 +62,7 @@ const verifyUserToken = async(username, userToken) => {
     return false
 }
 
-router.get('/a', (req, res) => {
+router.get('/', (req, res) => {
     res.json({ message: "Welcome to the web application!" })
 })
 
