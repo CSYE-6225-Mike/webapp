@@ -72,7 +72,7 @@ router.get('/healthz', (req, res) => {
     res.status(200).send()
 })
 
-router.post('/v1/account', async(req, res, next) => {
+router.post('/v2/account', async(req, res, next) => {
     sdc.increment('Test post.v1.account')
     logger.info('POST /v1/account')
     const data = await models.findOne({ where: { username: req.body.username } })
